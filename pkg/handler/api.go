@@ -33,9 +33,7 @@ func (h *Handler) NewURL(c *gin.Context) {
 	}
 	slog.Info("Url saved at id: ", slog.Int64("id", id))
 	c.JSON(200, gin.H{
-		"id":    id,
-		"url":   json.URL,
-		"alias": json.Alias,
+		"url": json.URL,
 	})
 
 }
@@ -53,6 +51,7 @@ func (h *Handler) RedirectByJSON(c *gin.Context) {
 		return
 	}
 	slog.Info("response url succes")
+	c.Redirect(301, url)
 	c.JSON(200, gin.H{
 		"url": url,
 	})
@@ -71,7 +70,6 @@ func (h *Handler) RedirectByForm(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, "wrong alias!")
 		return
 	}
-	c.Redirect(301, url)
 	slog.Info("response url succes")
 	c.JSON(200, gin.H{
 		"url": url,
