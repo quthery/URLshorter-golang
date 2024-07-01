@@ -16,7 +16,7 @@ func main() {
 
 	handler := handler.NewHandler(storage)
 	srv := new(server.Server)
-	if err := srv.Run("8080", handler.InitRoutes()); err != nil {
+	if err := srv.Run("8000", handler.InitRoutes()); err != nil {
 		log.Fatalf("error pri zapyske: %s", err)
 	}
 }

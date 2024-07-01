@@ -40,7 +40,7 @@
             border-radius: 4px;
             margin-bottom: 16px;
         }
-        input[type="submit"] {
+        input[type="button"] {
             background-color: #007bff;
             color: #fff;
             border: none;
@@ -49,54 +49,58 @@
             font-size: 14px;
             cursor: pointer;
         }
-        input[type="submit"]:hover {
+        input[type="button"]:hover {
             background-color: #0056b3;
         }
     </style>
-</head>
 <body>
-    <div class="container">
-        <h1>URL Form</h1>
-        <form id="urlForm">
-            <label for="url">URL:</label>
-            <input type="text" id="url" name="url" required>
-            <label for="alias">Alias:</label>
-            <input type="text" id="alias" name="alias" required>
-            <input type="submit" value="Save">
-            <input type="button" id="submitButton" value="Сохранить" onclick="redirectToAlias()">
-        </form>
-        <div id="result"></div>
-    </div>
+<div class="container">
+    <h1>URL Form</h1>
+    <form id="urlForm">
+        <label for="url">URL:</label>
+        <input type="text" id="url" name="url" required>
+        <label for="alias">Alias:</label>
+        <input type="text" id="alias" name="alias" required>
+        <input type="button" id="submitButton" value="Сохранить" onclick="saveUrl()">
+        <div id="status"></div>
+        <div id="shortedUrl"></div>
+    </form>
+</div>
 
-    <script>
-        document.getElementById("urlForm").addEventListener("submit", async function(e) {
-            e.preventDefault();
-            const url = document.getElementById("url").value;
-            const alias = document.getElementById("alias").value;
+<script>
+function saveUrl() {
+    const url = document.getElementById("url").value;
+    const alias = document.getElementById("alias").value;
 
-            try {
-                const response = await fetch("/api/newURL", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ url, alias })
-                });
+    // Отправляем запрос на сохранение URL
+    fetch("/api/newURL", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ url, alias })
+    })
+    .then(response => {
+        if (response.status === 400) {
+            document.getElementById("status").textContent = "Этот URL уже занят";
+        }else {
+            document.getElementById("submitButton").value = "Перейти";
+        document.getElementById("status").textContent = "Успешно сохранено!";
 
-                const data = await response.json();
-                document.getElementById("result").textContent = data.message;
-
-                // Изменяем текст кнопки на "Перейти" после успешного ответа
-                document.getElementById("submitButton").value = "Перейти";
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        });
-
-        function redirectToAlias() {
-            const alias = document.getElementById("alias").value;
-            window.location.href = `/api/alias?alias=${alias}`;
+        // Добавляем ссылку на сокращенный URL
+        const shortenedUrl = `/c/${alias}`;
+        const linkElement = document.createElement("a");
+        linkElement.href = shortenedUrl;
+        linkElement.textContent = "Перейти";
+        document.getElementById("status").appendChild(linkElement);
         }
-    </script>
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        document.getElementById("status").textContent = "Произошла ошибка";
+    });
+}
+
+</script>
 </body>
 </html>

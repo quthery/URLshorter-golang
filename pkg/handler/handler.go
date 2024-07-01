@@ -20,13 +20,14 @@ func (h *Handler) InitRoutes() *gin.Engine {
 	router.LoadHTMLGlob("pkg/templates/*")
 
 	router.GET("/newURL", h.Index)
+	router.GET("/c/:alias", h.RedirectByParams)
 
 	api := router.Group("/api")
 	{
 		api.POST("/newURL", h.NewURL)
 		api.GET("/aliasJSON", h.RedirectByJSON)
 		api.GET("/aliasForm", h.RedirectByForm)
-		api.GET("/alias", h.RedirectByParams)
+
 	}
 
 	return router
