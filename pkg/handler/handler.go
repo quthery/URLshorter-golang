@@ -16,11 +16,12 @@ func NewHandler(database *sqlite.Storage) *Handler {
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
-
 	router.LoadHTMLGlob("pkg/templates/*")
 
-	router.GET("/newURL", h.Index)
-	router.GET("/c/:alias", h.RedirectByParams)
+	router.GET("/fr/newURL", h.Shorting)
+	router.GET("/", h.Index)
+	router.GET("/fr/about", h.About)
+	router.GET("/:alias", h.RedirectByParams)
 
 	api := router.Group("/api")
 	{

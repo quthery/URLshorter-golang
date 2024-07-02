@@ -3,33 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>URL Form</title>
+    <title>Меню shortener</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            background-image: url("https://www.cossa.ru/upload/iblock/259/1_11.jpg"); /* Замените на путь к вашей фоновой картинке */
+            background-size: cover;
+            background-position: center;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
         }
         .container {
-            background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
             padding: 20px;
-            width: 300px;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            font-size: 24px;
-            margin-bottom: 20px;
+            color: #333;
         }
-        label {
-            display: block;
+        /* Навигационное меню */
+        nav {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: #777;
+        }
+        button{
+            background-color: #ab340c;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            padding: 10px 20px;
             font-size: 14px;
-            margin-bottom: 8px;
+            cursor: pointer;
         }
         input[type="text"],
         input[type="password"] {
@@ -41,7 +60,7 @@
             margin-bottom: 16px;
         }
         input[type="button"] {
-            background-color: #007bff;
+            background-color: rgba(91, 16, 196,    0.85);
             color: #fff;
             border: none;
             border-radius: 4px;
@@ -50,10 +69,16 @@
             cursor: pointer;
         }
         input[type="button"]:hover {
-            background-color: #0056b3;
+            background-color: rgba(91, 16, 196,    0.9);
         }
     </style>
+    <link rel="shortcut icon" href="https://cdn6.aptoide.com/imgs/4/8/2/4827f804e2e87268a9ff7056541db259_icon.png">
 <body>
+    <nav>
+        <a href="/">Home</a>
+        <a href="/fr/about">About</a>
+        <a href="/f/newURL">Lets short!!</a>
+    </nav>
 <div class="container">
     <h1>URL Form</h1>
     <form id="urlForm">
@@ -62,18 +87,23 @@
         <label for="alias">Alias:</label>
         <input type="text" id="alias" name="alias" required>
         <input type="button" id="submitButton" value="Сохранить" onclick="saveUrl()">
+        <p id="example">Пример alias: {{ .str }}</p>
         <div id="status"></div>
         <div id="shortedUrl"></div>
     </form>
 </div>
+<footer>
+    © 2024 qShrt.ru
+</footer>
 
 <script>
 function saveUrl() {
     const url = document.getElementById("url").value;
     const alias = document.getElementById("alias").value;
-
-    // Отправляем запрос на сохранение URL
-    fetch("/api/newURL", {
+    if (alias.value == null){
+        alias.value = document.getElementById("example").value;
+    }   
+    fetch("/api/newURL", {  
         method: "POST",
         headers: {
             "Content-Type": "application/json"
@@ -82,17 +112,18 @@ function saveUrl() {
     })
     .then(response => {
         if (response.status === 400) {
-            document.getElementById("status").textContent = "Этот URL уже занят";
+            document.getElementById("status").textContent = "Этот URL уже занят или же ты не заполнил поле";
         }else {
-            document.getElementById("submitButton").value = "Перейти";
         document.getElementById("status").textContent = "Успешно сохранено!";
 
-        // Добавляем ссылку на сокращенный URL
-        const shortenedUrl = `/c/${alias}`;
+        const shortenedUrl = `/${alias}`;
         const linkElement = document.createElement("a");
+        const link = document.createElement("p");
         linkElement.href = shortenedUrl;
         linkElement.textContent = "Перейти";
+        link.textContent = "отправляй эту ссылку друзьям!\n"+ linkElement.href;
         document.getElementById("status").appendChild(linkElement);
+        document.getElementById("status").appendChild(link);
         }
     })
     .catch(error => {

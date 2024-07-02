@@ -5,6 +5,8 @@ import (
 	"shorter/pkg/handler"
 	"shorter/pkg/server"
 	sqlite "shorter/pkg/sqlite"
+
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
@@ -13,6 +15,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("db error: %s", err)
 	}
+	gin.SetMode(gin.ReleaseMode)
 
 	handler := handler.NewHandler(storage)
 	srv := new(server.Server)
